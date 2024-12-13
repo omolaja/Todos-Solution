@@ -42,7 +42,7 @@ namespace TodosService.Services
             try
             {
                 // Fetch todos from the external API
-                var response = await _httpClient.GetAsync(_apiModel.TodosApi);
+                using var response = await _httpClient.GetAsync(_apiModel.TodosApi);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -123,7 +123,7 @@ namespace TodosService.Services
             {
                 var requestUrl = $"{_apiModel.WeatherApi}?key={_apiModel.WeatherApiKey}&q={todoItem.Location}";
 
-                var response = await _httpClient.GetAsync(requestUrl);
+                using var response = await _httpClient.GetAsync(requestUrl);
 
                 if (!response.IsSuccessStatusCode)
                 {

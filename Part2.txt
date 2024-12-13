@@ -1,0 +1,110 @@
+1. void methods do not return values and cannot be awaited. Similarly, async void methods cannot be awaited, 
+   making them unsuitable for error handling and unit testing. And it should only be used for event handlers 
+   such as button click handler.
+
+2. Using static variable in a multi-threaded or web application can lead to several chanlleges, because it 
+   have it has application wide scope and a single instance shared across all request and threads. It can to 
+   the exposure of sensitive data or information to uninteded users and also memory leakages.
+
+3. The == operator compares two objects or variale for equality and can be overloaded for custom behavior while
+   .Equals() is a virtual method in System.Object class and intended to be overridden to implement custom logics.
+
+4. Because unmanaged resources are not cleaned up by the garbage collector, failing to implement IDisposable for
+   classes accessing them might result in resource leaks, performance issues, and system instability. Using the IDisposable interface, 
+   adhere to the Dispose pattern, and making sure of the use of using statement.
+
+5. CTEs are in-memory, non-materialized, single-use query results defined with WITH and suited for simple, recursive, or ad-hoc operations. 
+   Temporary tables are materialized in tempdb, reusable across queries, and allow indexing for better performance with large or complex datasets.
+   I will prefer CTEs for query readability and recursion, and temporary tables for reusability, indexing, and multi-step processing. 
+   Temporary tables persist for the session, while CTEs are limited to the query scope. Example below
+
+   -- CTE for generating monthly totals with three categories
+            WITH MonthList AS (
+               SELECT
+                   YEAR(GETDATE()) AS transaction_year,
+                   1 AS transaction_month,
+                   DATENAME(month, DATEFROMPARTS(YEAR(GETDATE()), 1, 1)) AS month_name
+               UNION ALL
+               SELECT
+                   YEAR(GETDATE()),
+                   transaction_month + 1,
+                   DATENAME(month, DATEFROMPARTS(YEAR(GETDATE()), transaction_month + 1, 1))
+               FROM MonthList
+               WHERE transaction_month + 1 <= MONTH(GETDATE())
+            ),
+            MonthlyTotals AS (
+              -- Summing total amounts per month with conditions for successful, pending, and failed
+              SELECT
+                  YEAR(bt.Datecreated) AS transaction_year,
+                  MONTH(bt.Datecreated) AS transaction_month,
+                  SUM(CASE WHEN bt.ResponseCode = '0' THEN bt.Amount ELSE 0 END) AS total_amountSuccessful,
+                  SUM(CASE WHEN bt.ResponseCode IN ('7','6') THEN bt.Amount ELSE 0 END) AS total_amountPending,
+                  SUM(CASE WHEN bt.ResponseCode NOT IN ('0', '7','6') THEN bt.Amount ELSE 0 END) AS total_amountFailed
+              FROM
+                  tblTransaction bt
+              WHERE
+                  YEAR(bt.Datecreated) = YEAR(GETDATE())
+                  AND MercantId = @merchantId -- Filter by the specific merchant
+              GROUP BY
+                  YEAR(bt.Datecreated),
+                  MONTH(bt.Datecreated)
+            ),
+            FinalResult AS (
+               SELECT
+                   ml.transaction_year,
+                   ml.transaction_month,
+                   ml.month_name,
+                   COALESCE(mt.total_amountSuccessful, 0) AS total_amountSuccessful,
+                   COALESCE(mt.total_amountPending, 0) AS total_amountPending,
+                   COALESCE(mt.total_amountFailed, 0) AS total_amountFailed
+               FROM
+                   MonthList ml
+               LEFT JOIN
+                   MonthlyTotals mt
+               ON
+                   ml.transaction_year = mt.transaction_year
+                   AND ml.transaction_month = mt.transaction_month
+            )
+            -- Generate the total_amounts in a format suitable for charts
+            SELECT
+                @TotalCount AS TotalCount,
+                @Successful AS Successful,
+                @Pending AS Pending,
+                @Failed AS Failed,
+                '[' + STRING_AGG(CAST(total_amountSuccessful AS VARCHAR), ', ') + ']' AS total_amountSuccessful,
+                '[' + STRING_AGG(CAST(total_amountPending AS VARCHAR), ', ') + ']' AS total_amountPending,
+                '[' + STRING_AGG(CAST(total_amountFailed AS VARCHAR), ', ') + ']' AS total_amountFailed
+            FROM
+                FinalResult;
+
+     -- Using temporary table to disburse batch payment
+      CREATE TYPE [dbo].[Typeintiatepaymenttransactiontemp] AS TABLE(
+	     [BeneficiaryAccount] [varchar](50) NULL,
+	     [BeneficiaryName] [varchar](150) NULL,
+	     [SortCode] [varchar](50) NULL,
+	     [Amount] [decimal](18, 2) NULL )
+GO
+     -- using the Temporary table
+     @beneficiaries Typeintiatepaymenttransactiontemp READONLY
+
+     INSERT INTO transaction (
+                   BeneficiaryAccount,
+                   BeneficiaryName,
+                   SortCode,
+                   Amount
+                )
+                SELECT 
+                   BeneficiaryAccount,BeneficiaryName,SortCode,Amount
+                FROM @beneficiaries;
+
+
+6.  There are several issue the query that can leadd to unexpected performance or behavior. The IsRecommended method is a c# method defined outside
+    the query and cannot be translated to SQL by Entity Framework. And as such the filtering cannot executed at Database level. Secondly, the StartsWith 
+    and EndsWith can be case sensitive which can lead to unexpected results if the method is to perform a case insensitive comparison. Additionally, it risks 
+    NullReferenceException if the Title is null.
+    
+    var books = dbContext.Books.Where(p => p.Title != null && p.Title.StartsWith("A") && p.Title.EndsWith("Z")).ToList();
+
+7.  I believe exception handling in backend applications should be centralized, structured, and resilient to ensure reliability and maintainability. 
+    I used Serilog for consistent error logging and handling, alongside domain-specific logic for graceful degradation.
+        

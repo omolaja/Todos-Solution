@@ -21,15 +21,20 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Todos.Repository", "Todos.R
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Todos.Service", "Todos.Service", "{3ACD2948-1B5A-4288-9F2E-BF9773505B5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodosService", "TodosService\TodosService.csproj", "{CFBFD19C-E73C-49FE-90DF-61D53FFCD709}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodosService", "TodosService\TodosService.csproj", "{CFBFD19C-E73C-49FE-90DF-61D53FFCD709}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{67946B92-BA13-4BBC-92D8-81546FC806D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilitities", "Utilitities\Utilitities.csproj", "{21D11EA3-A62E-4CC3-8A8E-5E61F2545901}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utilitities", "Utilitities\Utilitities.csproj", "{21D11EA3-A62E-4CC3-8A8E-5E61F2545901}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Todos.UnitTesting", "Todos.UnitTesting", "{BEC2350C-BA51-4BC7-8372-49096D02648F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todo.UnitTesting", "Todo.UnitTesting\Todo.UnitTesting.csproj", "{90004C24-3BD8-464A-A9A9-4E0F82DE8BEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Todo.UnitTesting", "Todo.UnitTesting\Todo.UnitTesting.csproj", "{90004C24-3BD8-464A-A9A9-4E0F82DE8BEB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Part2", "Part2", "{478E040B-9ACC-4FCF-9CEF-B64DBFAEEB47}"
+	ProjectSection(SolutionItems) = preProject
+		Part2.txt = Part2.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,6 +87,7 @@ Global
 		{21D11EA3-A62E-4CC3-8A8E-5E61F2545901} = {67946B92-BA13-4BBC-92D8-81546FC806D9}
 		{BEC2350C-BA51-4BC7-8372-49096D02648F} = {CFC06FA5-0E9B-4886-A751-BCC2852D776A}
 		{90004C24-3BD8-464A-A9A9-4E0F82DE8BEB} = {BEC2350C-BA51-4BC7-8372-49096D02648F}
+		{478E040B-9ACC-4FCF-9CEF-B64DBFAEEB47} = {CFC06FA5-0E9B-4886-A751-BCC2852D776A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA60679E-9534-4049-A370-BE3C32A535BE}
