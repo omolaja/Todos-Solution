@@ -24,7 +24,7 @@ namespace TodosService.Services
         private readonly ILogger<TodoService> _logger;
         private readonly ResponseHelper _responseHelper;
         private readonly ApiResponse _apiResponse; 
-
+       
         public TodoService(ITodoRepository todoRepository, HttpClient httpClient, IOptions<ApiModel> apiModel,
             ICategoryRepository categoryRepository,ILogger<TodoService> logger, ResponseHelper responseHelper, ApiResponse apiResponse)
         {
@@ -168,13 +168,13 @@ namespace TodosService.Services
                     DueDate = todoItems.DueDate
                 };
                 var response = await _todoRepository.AddTodoAsync(todo);
-                return response < 0 ? _apiResponse.createResponse("Failed", "Todo item already exists or could not be added.", null) :
-                    _apiResponse.createResponse("Successful", $"Todo item added successfully", response.ToString());
+                return response < 0 ? _apiResponse.createResponse(ResponseStatus.Failed.ToString(), "Todo item already exists or could not be added.", null) :
+                    _apiResponse.createResponse(ResponseStatus.Successful.ToString(), $"Todo item added successfully", response.ToString());
             }
             catch (Exception ex)
             {
                 _logger.LogError($"An unexpected error occurred while processing TodoItems: {ex.Message}");
-                return _apiResponse.createResponse("Error", "An unexpected error occurred while processing request.", null);
+                return _apiResponse.createResponse(ResponseStatus.Error.ToString(), "An unexpected error occurred while processing request.", null);
             }
         }
 
@@ -196,13 +196,13 @@ namespace TodosService.Services
 
                 var response = await _todoRepository.UpdateTodoAsync(todo);
 
-                return response == false ? _apiResponse.createResponse("Failed", "Todo item failed to update.", null) :
-                   _apiResponse.createResponse("Successful", $"Todo item updated successfully.", null);
+                return response == false ? _apiResponse.createResponse(ResponseStatus.Failed.ToString(), "Todo item failed to update.", null) :
+                   _apiResponse.createResponse(ResponseStatus.Successful.ToString(), $"Todo item updated successfully.", null);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"An unexpected error occurred while updating TodoItems: {ex.Message}");
-                return _apiResponse.createResponse("Error", "An unexpected error occurred while processing request.", null);
+                return _apiResponse.createResponse(ResponseStatus.Error.ToString(), "An unexpected error occurred while processing request.", null);
             }
         }
 
@@ -213,13 +213,13 @@ namespace TodosService.Services
             {
                 var response = await _todoRepository.DeleteTodoByIdAsync(id);
 
-                return response == false ? _apiResponse.createResponse("Failed", $"Todo item with ID {id} could not be found or deleted.", null) :
-                   _apiResponse.createResponse("Successful", $"Todo item successfully deleted.", null);
+                return response == false ? _apiResponse.createResponse(ResponseStatus.Failed.ToString(), $"Todo item with ID {id} could not be found or deleted.", null) :
+                   _apiResponse.createResponse(ResponseStatus.Successful.ToString(), $"Todo item successfully deleted.", null);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"An unexpected error occurred while deleting TodoItems: {ex.Message}");
-                return _apiResponse.createResponse("Error", "An unexpected error occurred while processing request.", null);
+                return _apiResponse.createResponse(ResponseStatus.Error.ToString(), "An unexpected error occurred while processing request.", null);
             }
         }
 
@@ -228,7 +228,7 @@ namespace TodosService.Services
             try
             {
                 var response = await _todoRepository.SearchTodosAsync(entity);
-                var (listOfTodos, standardResponse) = _responseHelper.CreateListResponse(response.ToList(), response.Any() ? "successful" :
+                var (listOfTodos, standardResponse) = _responseHelper.CreateListResponse(response.ToList(), response.Any() ? ResponseStatus.Successful.ToString() :
                     "No record found", null, null);
 
                 // Format the response object to match the required output structure
@@ -249,5 +249,6 @@ namespace TodosService.Services
                 };
             }
         }
+
     }
 }
