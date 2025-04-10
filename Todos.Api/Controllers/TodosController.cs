@@ -59,7 +59,7 @@ namespace Todos.Api.Controllers
             }
         }
 
-        [HttpPost("update-todos-item")]
+        [HttpPut("update-todos-item")]
         public async Task<IActionResult> UpdateTodosItem([FromBody] TodosUpdateRapper todoItems)
         {
             if (todoItems == null)
@@ -86,8 +86,8 @@ namespace Todos.Api.Controllers
             }
         }
 
-        [HttpPost("delete-todos-item")]
-        public async Task<IActionResult> DeleteTodosItem([FromBody] DataObject dataObject)
+       [HttpDelete("delete-todos-item/{id:int}")]
+        public async Task<IActionResult> DeleteTodosItem(int Id)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace Todos.Api.Controllers
                     return BadRequest("Invalid Todo ID.");
                 }
 
-                var response = await _todoService.DeleteTodoAsync(dataObject.Id);
+                var response = await _todoService.DeleteTodoAsync(Id);
                 return Ok(response);
             }
             catch (Exception ex)
